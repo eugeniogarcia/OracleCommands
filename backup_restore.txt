@@ -1,0 +1,51 @@
+//Para indicar cual es la base de datos
+set ORACLE_SID=xe
+
+//Abre la utilidad
+rman target /
+
+//Hace el backup
+backup database;
+
+//Con esta secuencia hacemos un cold backup. Deberiamos tener un archivelog
+RMAN> run {
+shutdown immediate;
+startup mount;
+backup database;
+alter database open;
+}
+
+//Lista los backups disponibles
+list backup;
+
+//Borra backups
+delete backup;
+
+//Hace un backup que incluye el archivelog
+backup database plus archivelog;
+
+
+//Para la base de datos
+sqlplus / as sysdba
+shutdown abort;
+
+
+//Arranca la base de datos
+sqlplus / as sysdba
+startup;
+
+
+//Restaurar la base de datos
+rman target /
+
+startup nomount;
+
+restore controlfile from 
+
+alter database mount;
+
+restore database;
+
+recover database;
+
+alter database open resetlogs;
